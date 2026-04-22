@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<header>
+    <h1>Student Feedback System</h1>
+    <a href="/" style="font-size: 0.9rem;">← Back to Home</a>
+</header>
+
+<div class="container">
+    <div class="card login-container">
+        <h2 class="text-center">Admin Login</h2>
+
+        {% if error %}
+            <div style="background: #FEF2F2; color: #EF4444; padding: 0.75rem; border-radius: var(--radius-md); font-size: 0.9rem; border: 1px solid #FECACA; text-align: center;">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <form method="POST">
+            <div>
+                <label>Username</label>
+                <input type="text" name="username" required>
+            </div>
+
+            <div>
+                <label>Password</label>
+                <input type="password" name="password" required>
+            </div>
+
+            <button type="submit" class="mt-4">Login</button>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Feedback System</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <header>
+        <h1>Student Feedback System</h1>
+        <a href="/login" class="btn btn-secondary" style="font-size: 0.9rem; padding: 0.5rem 1rem;">Admin Login</a>
+    </header>
+
+    <div class="container">
+        <div class="card" style="max-width: 600px; margin: 0 auto;">
+            <h2 style="text-align: center;">Student Feedback</h2>
+            <p class="mb-4" style="text-align: center; color: var(--text-muted);">We value your honest feedback to help
+                us improve.</p>
+
+            <form action="/submit" method="POST">
+                <div>
+                    <label>Subject</label>
+                    <input type="text" name="subject" placeholder="e.g. WAD" required>
+                </div>
+
+                <div>
+                    <label>Faculty Name</label>
+                    <input type="text" name="faculty" placeholder="e.g. Faculty Name" required>
+                </div>
+
+                <div>
+                    <label>Rating</label>
+                    <select name="rating" required>
+                        <option value="" disabled selected>Select a rating...</option>
+                        <option value="5">⭐⭐⭐⭐⭐ 5 - Excellent</option>
+                        <option value="4">⭐⭐⭐⭐ 4 - Good</option>
+                        <option value="3">⭐⭐⭐ 3 - Average</option>
+                        <option value="2">⭐⭐ 2 - Poor</option>
+                        <option value="1">⭐ 1 - Very Poor</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label>Comments (Optional)</label>
+                    <textarea name="comment" placeholder="Share your experience..."></textarea>
+                </div>
+
+                <button type="submit">Submit Feedback</button>
+            </form>
+        </div>
+    </div>
+
+</body>
+
+</html>

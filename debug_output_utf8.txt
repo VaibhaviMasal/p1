@@ -1,0 +1,119 @@
+--- CHECKING DATABASE DATA ---
+Total Feedback Rows: 4
+
+Subject Stats:
+  DSA: 1.0
+  HCI: 4.0
+  TOC: 5.0
+  WAD: 4.0
+
+Rating Distribution:
+{1: 1, 2: 0, 3: 0, 4: 2, 5: 1}
+
+--- CHECKING RENDERED TEMPLATE JS ---
+
+        const subjects = [
+            
+        "DSA",
+        
+        "HCI",
+        
+        "TOC",
+        
+        "WAD",
+        
+        ];
+
+        const ratings = [
+            
+        1.0,
+        
+        4.0,
+        
+        5.0,
+        
+        4.0,
+        
+        ];
+
+        const ctx = document.getElementById('subjectChart').getContext('2d');
+
+        // Modern Chart colors
+        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(79, 70, 229, 0.8)');
+        gradient.addColorStop(1, 'rgba(236, 72, 153, 0.6)');
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: subjects,
+                datasets: [{
+                    label: 'Average Rating',
+                    data: ratings,
+                    backgroundColor: gradient,
+                    borderRadius: 6,
+                    borderSkipped: false,
+                    barThickness: 40
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 5,
+                        grid: { color: '#E5E7EB' }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+
+        // RATING DISTRIBUTION CHART
+        const ratingCounts = [
+            1,
+        0,
+        0,
+        2,
+        1
+        ];
+
+        const ctxRating = document.getElementById('ratingChart').getContext('2d');
+        new Chart(ctxRating, {
+            type: 'doughnut',
+            data: {
+                labels: ['1 Star', '2 Stars', '3 Stars', '4 Stars', '5 Stars'],
+                datasets: [{
+                    data: ratingCounts,
+                    backgroundColor: [
+                        '#EF4444', // Red 500
+                        '#F97316', // Orange 500
+                        '#EAB308', // Yellow 500
+                        '#10B981', // Emerald 500
+                        '#4F46E5'  // Indigo 600
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            usePointStyle: true,
+                            boxWidth: 8
+                        }
+                    }
+                },
+                cutout: '70%'
+            }
+        });
+    

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+    <header>
+        <h1>Dashboard</h1>
+        <div style="display: flex; gap: 1rem; align-items: center;">
+            <a href="/" style="font-size: 0.9rem;">View Form</a>
+            <a href="/logout" class="btn btn-danger"
+                style="padding: 0.5rem 1rem; color: #DC2626; background: #FEF2F2; border-color: #FCA5A5;">Logout</a>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- SUMMARY CARDS -->
+        <div class="summary">
+            <div class="summary-card">
+                <h3>Total Feedback</h3>
+                <p>{{ total }}</p>
+            </div>
+
+            <div class="summary-card">
+                <h3>Average Rating</h3>
+                <p>{{ average }} <span style="font-size: 1rem; color: var(--text-muted); font-weight: normal;">/
+                        5</span></p>
+            </div>
+        </div>
+
+        <div
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+            <!-- SUBJECT-WISE TABLE -->
+            <div class="card">
+                <h2>Subject Performance</h2>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Subject</th>
+                                <th>Avg Rating</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for s in subject_stats %}
+                            <tr>
+                                <td style="font-weight: 500;">{{ s.subject }}</td>
+                                <td>
+                                    <span style="
+                                    background: {% if s.avg_rating >= 4 %}#D1FAE5{% elif s.avg_rating >= 3 %}#FEF3C7{% else %}#FEE2E2{% endif %}; 
+                                    color: {% if s.avg_rating >= 4 %}#065F46{% elif s.avg_rating >= 3 %}#92400E{% else %}#991B1B{% endif %};
+                                    padding: 0.25rem 0.5rem; border-radius: 4px; font-weight: 600; font-size: 0.9rem;
+                                ">
+                                        {{ "%.2f"|format(s.avg_rating) }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SUBJECT-WISE CHART -->
+            <div class="card">
+                <h2>Visual Overview</h2>
+                <div style="height: 300px; position: relative;">
+                    <canvas id="subjectChart"></canvas>
+                </div>
+            </div>
+
+            <!-- RATING DISTRIBUTION CHART -->
+            <div class="card">
+                <h2>Overall Ratings</h2>
+                <div style="height: 300px; position: relative;">
+                    <canvas id="ratingChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- ALL FEEDBACK TABLE -->
+        <div class="card">
+            <h2>All Feedback Responses</h2>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 15%;">Subject</th>
+                            <th style="width: 20%;">Faculty</th>
+                            <th style="width: 10%;">Rating</th>
+                            <th style="width: 10%;">Percentage</th>
+                            <th style="width: 35%;">Comment</th>
+                            <th style="width: 10%;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for f in feedbacks %}
+                        <tr>
+                            <td>{{ f.subject }}</td>
+                            <td>{{ f.faculty }}</td>
+                            <td>
+                                <span style="font-weight: 600;">{{ f.rating }}</span>/5
+                            </td>
+                            <td>
+                                <span
+                                    style="font-weight: 600; color: {% if f.rating >= 4 %}#059669{% elif f.rating >= 3 %}#D97706{% else %}#DC2626{% endif %};">
+                                    {{ (f.rating / 5 * 100) | int }}%
+                                </span>
+                            </td>
+                            <td style="color: var(--text-muted);">{{ f.comment }}</td>
+                            <td>
+                                <a href="/delete/{{ f.id }}" class="delete-btn"
+                                    onclick="return confirm('Are you sure you want to delete this feedback?');">Delete</a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center" style="padding: 2rem; color: var(--text-muted);">No
+                                feedback received yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- CHART SCRIPT -->
+    <script>
+        const subjects = [
+            {% for s in subject_stats %}
+        {{ s.subject | tojson }},
+        {% endfor %}
+        ];
+
+        const ratings = [
+            {% for s in subject_stats %}
+        {{ s.avg_rating }},
+        {% endfor %}
+        ];
+
+        const ctx = document.getElementById('subjectChart').getContext('2d');
+
+        // Modern Chart colors
+        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(79, 70, 229, 0.8)');
+        gradient.addColorStop(1, 'rgba(236, 72, 153, 0.6)');
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: subjects,
+                datasets: [{
+                    label: 'Average Rating',
+                    data: ratings,
+                    backgroundColor: gradient,
+                    borderRadius: 6,
+                    borderSkipped: false,
+                    barThickness: 40
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 5,
+                        grid: { color: '#E5E7EB' }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+
+        // RATING DISTRIBUTION CHART
+        const ratingCounts = [
+            {{ rating_dist[1] }},
+        {{ rating_dist[2] }},
+        {{ rating_dist[3] }},
+        {{ rating_dist[4] }},
+        {{ rating_dist[5] }}
+        ];
+
+        const ctxRating = document.getElementById('ratingChart').getContext('2d');
+        new Chart(ctxRating, {
+            type: 'doughnut',
+            data: {
+                labels: ['1 Star', '2 Stars', '3 Stars', '4 Stars', '5 Stars'],
+                datasets: [{
+                    data: ratingCounts,
+                    backgroundColor: [
+                        '#EF4444', // Red 500
+                        '#F97316', // Orange 500
+                        '#EAB308', // Yellow 500
+                        '#10B981', // Emerald 500
+                        '#4F46E5'  // Indigo 600
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            usePointStyle: true,
+                            boxWidth: 8
+                        }
+                    }
+                },
+                cutout: '70%'
+            }
+        });
+    </script>
+
+</body>
+
+</html>
